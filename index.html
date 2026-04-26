@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do you love me?</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4c2c2; /* Video jaisa light pink background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden; /* Taaki button smoothly move kare bina screen badhaye */
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin: 10px 0;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+            height: 20px; /* Layout jump na kare jab text change ho */
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        button {
+            padding: 10px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease; /* Smooth movement ke liye */
+            background-color: white;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #ffe6e6;
+        }
+
+        /* Initial state mein 'No' button position: relative rahega */
+        #no-btn {
+            position: relative; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img id="teddy-img" src="1st.gif" alt="Teddy Bear">
+        <h1 id="main-text">Do you love me? 🥺</h1>
+        <p id="sub-text">i am all yours...</p>
+        
+        <div class="btn-group">
+            <button id="yes-btn">Yes</button>
+            <button id="no-btn">No</button>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById("no-btn");
+        const yesBtn = document.getElementById("yes-btn");
+        const mainText = document.getElementById("main-text");
+        const subText = document.getElementById("sub-text");
+        const teddyImg = document.getElementById("teddy-img");
+
+        // "No" click sequence ke data
+        const noGifs = [
+            "2nd.webp", // SECOND TEDDY (Crying)
+            "3rd.webp", // THIRD TEDDY (Stressed)
+            "4th.gif"  // FOURTH TEDDY (Angry/Runaway)
+        ];
+
+        const messages = [
+            "Please think again! 🥺",
+            "Ek aur baar Soch lo! 🥺",
+            "beautiful pls Man jao na! Kitna code likh waogi 😭"
+        ];
+        
+        const subTexts = [
+            "so jao na matt aao...",
+            "ek aur baar soch lo Please jan...",
+            "bhot git load hai yrr is..."
+        ];
+
+        let noClickCount = 0;
+
+        // Function: "No" button ke text aur image ko update karne ke liye
+        function updateNoState() {
+            if (noClickCount < noGifs.length) {
+                teddyImg.src = noGifs[noClickCount];
+                mainText.innerText = messages[noClickCount];
+                subText.innerText = subTexts[noClickCount];
+                noClickCount++;
+            }
+        }
+
+        // Function: Button ko screen par bhagane ke liye
+        function runawayNoButton() {
+            // Agar pehle 3 states ho chuke hain, tabhi bhagega
+            if (noClickCount >= noGifs.length) {
+                // BUG FIX: Isko 'absolute' se 'fixed' kar diya hai
+                noBtn.style.position = "fixed";
+                
+                // Screen boundaries calculate karein, safe margin ke saath
+                const safeMargin = 50;
+                const maxX = window.innerWidth - noBtn.offsetWidth - safeMargin;
+                const maxY = window.innerHeight - noBtn.offsetHeight - safeMargin;
+                
+                // Random position calculate karein
+                const randomX = Math.max(safeMargin, Math.floor(Math.random() * maxX));
+                const randomY = Math.max(safeMargin, Math.floor(Math.random() * maxY));
+                
+                noBtn.style.left = `${randomX}px`;
+                noBtn.style.top = `${randomY}px`;
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // "No" button click par updates
+        noBtn.addEventListener("click", () => {
+            if (noClickCount < noGifs.length) {
+                // Pehli baar mein image update karo
+                updateNoState();
+            } else {
+                // 3 clicks ke baad click par bhi bhagega
+                runawayNoButton();
+            }
+        });
+
+        // "No" button par mouse jane (hover) par smooth movement logic
+        noBtn.addEventListener("mouseover", runawayNoButton);
+
+        // "Yes" button click par happy ending
+        yesBtn.addEventListener("click", () => {
+            mainText.innerText = "I knew it! You Love me a lot 😘";
+            subText.innerText = "";
+            // FIFTH TEDDY: Final kissing teddy
+            teddyImg.src = "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif"; 
+            
+            // "No" button ko hata do
+            noBtn.style.display = "none";
+            // Hover listener hata do taaki koi background issue na ho
+            noBtn.removeEventListener("mouseover", runawayNoButton);
+        });
+
+    </script>
+
+</body>
+</html>
